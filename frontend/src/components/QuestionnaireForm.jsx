@@ -135,9 +135,50 @@ const QuestionnaireForm = () => {
   };
 
   const handleSubmit = () => {
-    console.log("Submitted Answers:", answers);
-    alert("Thank you for completing the questionnaire!");
+    // Check if there are any unanswered questions
+    let allAnswered = true;
+    Object.keys(questions).forEach((page) => {
+      questions[page].forEach((question) => {
+        if (!answers[page][question.text]) {
+          allAnswered = false;
+        }
+      });
+    });
+  
+    if (!allAnswered) {
+      alert("Please answer all the questions before submitting.");
+      return;
+    }
+  
+    // Simulate sending answers to an API or saving them
+    const submitAnswers = async () => {
+      try {
+        // Simulating an API request (replace with your actual backend endpoint)
+
+        const response = await fetch("https://your-api-endpoint.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(answers),
+        });
+  
+        if (response.ok) {
+          console.log("Answers submitted successfully:", answers);
+          alert("Thank you for completing the questionnaire! Your responses have been recorded.");
+        } else {
+          throw new Error("Failed to submit answers");
+        }
+      } catch (error) {
+        console.error("Error submitting answers:", error);
+        alert("Something went wrong. Please try again later.");
+      }
+    };
+  
+    // Call the simulated submit function
+    submitAnswers();
   };
+  
 
   const renderQuestions = () => {
     return questions[`page${currentPage}`].map((question, index) => (
@@ -181,67 +222,15 @@ const QuestionnaireForm = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Questionnaire
-      </Typography>
-      <Box marginBottom={4}>
-        {renderQuestions()}
-      </Box>
-      
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={prevPage}
-          disabled={currentPage === 1}
-          sx={{
-            padding: "10px 20px",
-            borderRadius: "5px",
-            fontWeight: "bold",
-            "&:hover": {
-              backgroundColor: "#1976d2",
-              color: "#fff",
-            },
-          }}
-        >
-          Previous
-        </Button>
-
+    <Container maxWidth="sm" sx={{ padding: "20px", backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3 }}>
+      <Typography variant="h4" gutterBottom>University Questionnaire</Typography>
+      {renderQuestions()}
+      <Box display="flex" justifyContent="space-between" marginTop={3}>
+        <Button variant="contained" color="secondary" onClick={prevPage} disabled={currentPage === 1}>Previous</Button>
         {currentPage === Object.keys(questions).length ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            sx={{
-              padding: "10px 20px",
-              borderRadius: "5px",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#1565c0",
-                color: "#fff",
-              },
-            }}
-          >
-            Submit
-          </Button>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
         ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={nextPage}
-            sx={{
-              padding: "10px 20px",
-              borderRadius: "5px",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#1565c0",
-                color: "#fff",
-              },
-            }}
-          >
-            Next
-          </Button>
+          <Button variant="contained" color="primary" onClick={nextPage}>Next</Button>
         )}
       </Box>
     </Container>
@@ -249,4 +238,3 @@ const QuestionnaireForm = () => {
 };
 
 export default QuestionnaireForm;
-
