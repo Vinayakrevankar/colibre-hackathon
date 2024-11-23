@@ -1,8 +1,8 @@
 {
-  "name": "mental-health-portal",
+  "name": "colibre-hackathon",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://vinayakrevankar.github.io/mental-health-portal",
+  "homepage": "https://vinayakrevankar.github.io/colibre-hackathon",
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
