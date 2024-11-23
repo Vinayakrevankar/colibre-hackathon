@@ -60,22 +60,19 @@ const QuestionnaireForm = () => {
       { text: "Scholarship?", options: ["yes", "no"] },
     ],
     page2: [
-      
-        {text: "In a semester, how often you felt nervous, anxious or on edge due to academic pressure?", options: optionRange4},
-        {text: "In a semester, how often have you been unable to stop worrying about your academic affairs?", options: optionRange4},
-        {text: "In a semester, how often have you had trouble relaxing due to academic pressure?", options: optionRange4},
-        {text: "In a semester, how often have you been easily annoyed or irritated because of academic pressure?", options: optionRange4},
-        {text: "In a semester, how often have you worried too much about academic affairs?", options: optionRange4},
-        {text: "In a semester, how often have you been so restless due to academic pressure that it is hard to sit still?", options: optionRange4},
-        {text: "In a semester, how often have you felt afraid, as if something awful might happen?", options: optionRange4},
-      
+      { text: "In a semester, how often you felt nervous, anxious or on edge due to academic pressure?", options: optionRange4 },
+      { text: "In a semester, how often have you been unable to stop worrying about your academic affairs?", options: optionRange4 },
+      { text: "In a semester, how often have you had trouble relaxing due to academic pressure?", options: optionRange4 },
+      { text: "In a semester, how often have you been easily annoyed or irritated because of academic pressure?", options: optionRange4 },
+      { text: "In a semester, how often have you worried too much about academic affairs?", options: optionRange4 },
+      { text: "In a semester, how often have you been so restless due to academic pressure that it is hard to sit still?", options: optionRange4 },
+      { text: "In a semester, how often have you felt afraid, as if something awful might happen?", options: optionRange4 },
     ],
     page3: [
       { text: "In a semester, how often have you felt upset due to something that happened in your academic affairs? ", options: optionRange5 },
       { text: "In a semester, how often you felt as if you were unable to control important things in your academic affairs", options: optionRange5 },
       { text: "In a semester, how often you felt nervous and stressed because of academic pressure? ", options: optionRange5 },
       { text: "In a semester, how often you felt as if you could not cope with all the mandatory academic activities? (e.g, assignments, quiz, exams) ", options: optionRange5 },
-      { text: "In a semester, how often you felt confident about your ability to handle your academic / university problems?", options: optionRange5 },
       { text: "In a semester, how often you felt confident about your ability to handle your academic / university problems?", options: optionRange5 },
       { text: "In a semester, how often you felt as if things in your academic life is going on your way? ", options: optionRange5 },
       { text: "In a semester, how often are you able to control irritations in your academic / university affairs? ", options: optionRange5 },
@@ -84,15 +81,15 @@ const QuestionnaireForm = () => {
       { text: "In a semester, how often you felt as if academic difficulties are piling up so high that you could not overcome them?  ", options: optionRange5 },
     ],
     page4: [
-      {text: "In a semester, how often have you had little interest or pleasure in doing things?", options: optionRange4},
-      {text: "In a semester, how often have you been feeling down, depressed or hopeless?", options: optionRange4},
-      {text: "In a semester, how often have you had trouble falling or staying asleep, or sleeping too much? ", options: optionRange4},
-      {text: "In a semester, how often have you been feeling tired or having little energy? ", options: optionRange4},
-      {text: "In a semester, how often have you had poor appetite or overeating? ", options: optionRange4},
-      {text: "In a semester, how often have you been feeling bad about yourself - or that you are a failure or have let yourself or your family down? ", options: optionRange4},
-      {text: "In a semester, how often have you been having trouble concentrating on things, such as reading the books or watching television? ", options: optionRange4},
-      {text: "In a semester, how often have you moved or spoke too slowly for other people to notice? Or you've been moving a lot more than usual because you've been restless? ", options: optionRange4},
-      {text: "In a semester, how often have you had thoughts that you would be better off dead, or of hurting yourself? ", options: optionRange4},
+      { text: "In a semester, how often have you had little interest or pleasure in doing things?", options: optionRange4 },
+      { text: "In a semester, how often have you been feeling down, depressed or hopeless?", options: optionRange4 },
+      { text: "In a semester, how often have you had trouble falling or staying asleep, or sleeping too much? ", options: optionRange4 },
+      { text: "In a semester, how often have you been feeling tired or having little energy? ", options: optionRange4 },
+      { text: "In a semester, how often have you had poor appetite or overeating? ", options: optionRange4 },
+      { text: "In a semester, how often have you been feeling bad about yourself - or that you are a failure or have let yourself or your family down? ", options: optionRange4 },
+      { text: "In a semester, how often have you been having trouble concentrating on things, such as reading the books or watching television? ", options: optionRange4 },
+      { text: "In a semester, how often have you moved or spoke too slowly for other people to notice? Or you've been moving a lot more than usual because you've been restless? ", options: optionRange4 },
+      { text: "In a semester, how often have you had thoughts that you would be better off dead, or of hurting yourself? ", options: optionRange4 },
     ],
   };
 
@@ -119,8 +116,15 @@ const QuestionnaireForm = () => {
   };
 
   const nextPage = () => {
-    if (currentPage < Object.keys(questions).length) {
-      setCurrentPage(currentPage + 1);
+    const unansweredQuestions = questions[`page${currentPage}`].some(
+      (q) => !answers[`page${currentPage}`][q.text]
+    );
+    if (!unansweredQuestions) {
+      if (currentPage < Object.keys(questions).length) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else {
+      alert("Please answer all questions on this page.");
     }
   };
 
@@ -139,7 +143,7 @@ const QuestionnaireForm = () => {
     return questions[`page${currentPage}`].map((question, index) => (
       <Box key={`q${index}`} marginBottom={2}>
         <Typography variant="body1" gutterBottom>
-          {question.text}
+          {question.text} (required)
         </Typography>
         <FormControl fullWidth>
           <Select
@@ -147,12 +151,26 @@ const QuestionnaireForm = () => {
             value={answers[`page${currentPage}`][question.text] || ""}
             onChange={handleChange}
             displayEmpty
+            required
+            aria-label={question.text}
+            sx={{
+              "& .MuiSelect-icon": {
+                color: "#1976d2", // Icon color
+              },
+              "& .MuiInputBase-root": {
+                borderRadius: "4px",
+                padding: "10px",
+                backgroundColor: "#f5f5f5", // Background color for select
+              },
+              "&:focus": {
+                borderColor: "#1976d2", // Blue focus color for inputs
+                boxShadow: "0 0 5px rgba(25, 118, 210, 0.5)", // Subtle shadow for focus
+              },
+            }}
           >
-            <MenuItem value="" disabled>
-              Select an option
-            </MenuItem>
-            {question.options.map((option, i) => (
-              <MenuItem key={i} value={option}>
+            <MenuItem value="" disabled>Select an option</MenuItem>
+            {question.options.map((option, idx) => (
+              <MenuItem key={idx} value={option}>
                 {option}
               </MenuItem>
             ))}
@@ -163,31 +181,72 @@ const QuestionnaireForm = () => {
   };
 
   return (
-    <Container maxWidth="xs" style={{ marginTop: "50px" }}>
-      <Typography variant="h4" component="h1" align="center" gutterBottom>
+    <Container>
+      <Typography variant="h4" gutterBottom>
         Questionnaire
       </Typography>
-      <Box component="form" noValidate>
+      <Box marginBottom={4}>
         {renderQuestions()}
-        <Box display="flex" justifyContent="space-between" marginTop="20px">
-          {currentPage > 1 && (
-            <Button variant="contained" color="secondary" onClick={prevPage}>
-              Previous
-            </Button>
-          )}
-          {currentPage < Object.keys(questions).length ? (
-            <Button variant="contained" color="primary" onClick={nextPage}>
-              Next
-            </Button>
-          ) : (
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
-          )}
-        </Box>
+      </Box>
+      
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={prevPage}
+          disabled={currentPage === 1}
+          sx={{
+            padding: "10px 20px",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            "&:hover": {
+              backgroundColor: "#1976d2",
+              color: "#fff",
+            },
+          }}
+        >
+          Previous
+        </Button>
+
+        {currentPage === Object.keys(questions).length ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            sx={{
+              padding: "10px 20px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                color: "#fff",
+              },
+            }}
+          >
+            Submit
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={nextPage}
+            sx={{
+              padding: "10px 20px",
+              borderRadius: "5px",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                color: "#fff",
+              },
+            }}
+          >
+            Next
+          </Button>
+        )}
       </Box>
     </Container>
   );
 };
 
 export default QuestionnaireForm;
+
