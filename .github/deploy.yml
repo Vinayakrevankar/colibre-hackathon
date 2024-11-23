@@ -36,16 +36,16 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./frontend
+        working-directory: ./frontendd
 
       - name: Build React app
         run: npm run build
-        working-directory: ./frontend
+        working-directory: ./frontendd
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./frontend/build
+          path: ./frontendd/build
 
   # Deployment job
   deploy:
