@@ -1,0 +1,77 @@
+service: colibre-hackathon
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  bucketName: ${self:service}-${self:custom.stage}-images
+  esbuild:
+    platform: "node"
+    target: node18
+    sourcemap: linked
+    external:
+      - mock-aws-s3
+      - nock  # Exclude unnecessary dev dependencies
+  serverless-offline:
+    httpPort: 4000
+    noPrependStageInUrl: true
+    reloadHandler: true
+
+provider:
+  name: aws
+  stage: ${self:custom.stage}
+  region: ${self:custom.region}
+  runtime: nodejs18.x
+  memorySize: 128
+  timeout: 15
+  logRetentionInDays: 7
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:*:table/*
+    - Effect: "Allow"
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+      Resource:
+        - arn:aws:s3:::${self:custom.bucketName}/*
+  httpApi:
+    cors: true
+
+functions:
+  app:
+    handler: backend/src/handler.handler
+    events:
+      - httpApi:
+          path: "/{proxy+}"
+          method: "*"
+
+resources:
+  Resources:
+    UsersTable3:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.stage}-student-users3
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        BillingMode: PAY_PER_REQUEST
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-esbuild
+  - serverless-offline
+
+package:
+  patterns:
+    - "!**/*.test.ts"
+    - "!node_modules/mock-aws-s3/**"  # Explicitly exclude mock dependency
+    - "!node_modules/nock/**"  # Explicitly exclude nock if not needed
+    - "!node_modules/aws-sdk/**"  # AWS SDK is bundled by AWS Lambda runtime
+  individually: true
+  excludeDevDependencies: true

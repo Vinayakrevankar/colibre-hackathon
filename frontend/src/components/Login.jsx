@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box, Card } from '@mui/material';
 import axios from 'axios';
+import {BASE_URL} from '../constant';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/login', { email, password });
+            const response = await axios.post(`${BASE_URL}/api/login`, { emailAddress: email, password });
             alert(response.data.message);
         } catch (error) {
             alert('Login failed. Try again.');
