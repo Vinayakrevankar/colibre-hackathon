@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Box, Container, Card } from '@mui/material';
+import { TextField, Button, Typography, Box, Card } from '@mui/material';
 import axios from 'axios';
+import {BASE_URL} from '../constant';
 
 const Signup = () => {
-    const [name, setName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignup = async (e) => {
         e.preventDefault();
+        const username = email; // Username will be the email address
         try {
-            const response = await axios.post('http://localhost:3000/signup', { name, email, password });
+            
+            const response = await axios.post(`${BASE_URL}/api/register`, { firstName, lastName, emailAddress: email, password, username });
             alert(response.data.message);
         } catch (error) {
             alert('Signup failed. Try again.');
@@ -63,12 +67,25 @@ const Signup = () => {
                 </Typography>
                 <Box component="form" onSubmit={handleSignup} noValidate>
                     <TextField
-                        label="Name"
+                        label="First Name"
                         variant="outlined"
                         fullWidth
                         margin="normal"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        style={{
+                            backgroundColor: 'white',
+                            borderRadius: '5px',
+                        }}
+                    />
+                    <TextField
+                        label="Last Name"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         required
                         style={{
                             backgroundColor: 'white',
